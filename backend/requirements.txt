@@ -1,0 +1,6 @@
+# Pinned exact versions (AGENTS.md). Python 3.13 / Django 5.2 LTS line.
+Django==5.2.18
+djangorestframework==3.18.3
+django-cors-headers==4.9.0
+django-environ==0.14.0
+psycopg[binary]==3.3.7

@@ -1,0 +1,6 @@
+# Docker image never bakes in local state or secrets.
+.venv/
+__pycache__/
+*.pyc
+.env
+db.sqlite3

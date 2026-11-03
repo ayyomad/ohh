@@ -1,0 +1,63 @@
+# Default usage: `docker compose up -d db` starts ONLY the database.
+# `docker compose --profile full up --build` also builds & runs both apps.
+#
+# The `full` profile exists for occasional containerised checks (D-008): the
+# normal workflow is native Windows dev with only Postgres in Docker.
+
+services:
+  db:
+    image: postgres:17
+    # Interpolation comes from the repo-root .env (same file the backend reads).
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ohh}
+      POSTGRES_USER: ${POSTGRES_USER:-ohh}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # Host port 5433 to avoid clashing with any local Postgres.
+      # Loopback-only binding: the DB must never be reachable from the LAN.
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ohh} -d ${POSTGRES_DB:-ohh}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    profiles: ["full"]
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in .env}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
+      # Fixed literal, not interpolated: "backend" is the compose-network
+      # hostname the Vite proxy sends (changeOrigin), and must not leak into
+      # or depend on the native-dev value in .env.
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1,backend"
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      POSTGRES_DB: ${POSTGRES_DB:-ohh}
+      POSTGRES_USER: ${POSTGRES_USER:-ohh}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      # Inside the compose network the DB is reachable as "db" on 5432.
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+    ports:
+      # Loopback-only binding: the dev server must never be reachable from the LAN.
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    profiles: ["full"]
+    # Vite dev server needs --host to be reachable from outside the container.
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
+    ports:
+      # Loopback-only binding: the dev server must never be reachable from the LAN.
+      - "127.0.0.1:5173:5173"
+
+volumes:
+  pgdata:

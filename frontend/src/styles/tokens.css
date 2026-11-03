@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens (docs/UI_DESIGN_SYSTEM.md).
+ *
+ * Raw values sit on :root (light) and [data-theme="dark"]; the @theme block
+ * maps them (with the `inline` keyword) so Tailwind utilities such as
+ * bg-surface or text-ink emit var(--ohh-*) references resolved at runtime.
+ * That is what makes a single data-theme attribute flip the whole UI with
+ * no recompiled CSS and no duplicated utility classes.
+ */
+:root {
+  color-scheme: light;
+  --ohh-ground: #dadbd7; /* ground (dashboard) */
+  --ohh-ground-canvas: #f2f2ef; /* ground (canvas) — held for later phases */
+  --ohh-surface: #f2f2ef;
+  --ohh-surface-2: #e8e9e5;
+  --ohh-ink: #202024; /* ink / text */
+  --ohh-muted: #6b6d6a; /* muted text */
+  --ohh-line: #a6a8a5; /* decorative lines only, never text */
+  --ohh-accent: #f04b12; /* fills, large outlines */
+  --ohh-accent-text: #c93a08; /* small accent text */
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ohh-ground: #17171a;
+  --ohh-ground-canvas: #17171a;
+  --ohh-surface: #202024;
+  --ohh-surface-2: #2a2a2f;
+  --ohh-ink: #ecece8;
+  --ohh-muted: #9a9c98;
+  --ohh-line: #3a3a40;
+  --ohh-accent: #ff5a24;
+  --ohh-accent-text: #ff7a4d;
+}
+
+@theme inline {
+  /* Colors — used as utilites: bg-ground, bg-surface, bg-surface-2, bg-accent,
+     text-ink, text-muted, text-accent-text, border-ink, border-line. */
+  --color-ground: var(--ohh-ground);
+  --color-ground-canvas: var(--ohh-ground-canvas);
+  --color-surface: var(--ohh-surface);
+  --color-surface-2: var(--ohh-surface-2);
+  --color-ink: var(--ohh-ink);
+  --color-muted: var(--ohh-muted);
+  --color-line: var(--ohh-line);
+  --color-accent: var(--ohh-accent);
+  --color-accent-text: var(--ohh-accent-text);
+
+  /* Families — fonts are self-hosted via @fontsource imports in main.tsx. */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-serif: "Instrument Serif", Georgia, serif;
+}
