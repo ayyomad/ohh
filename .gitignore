@@ -1,38 +1,30 @@
-# Python
-__pycache__/
-*.py[cod]
-*.sqlite3
-venv/
-.venv/
-env/
-
-# Django
-staticfiles/
-media/
+# Secrets / local env
 .env
 .env.*
 !.env.example
 
-# React
+# Python
+__pycache__/
+*.pyc
+.venv/
+backend/.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.sqlite3
+
+# Node
 node_modules/
-dist/
-build/
-
-# Environment
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# Logs
+frontend/dist/
+frontend/coverage/
 *.log
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
 
-# Local databases
-*.db
+# Docker
+docker-compose.override.yml

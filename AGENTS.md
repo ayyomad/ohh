@@ -1,27 +1,26 @@
+# AGENTS.md – rules for AI coding agents (OpenCode)
 
-# Instructions for AI Coding Agents
+Read these before any work: `docs/ARCHITECTURE.md`, `docs/DECISIONS.md`, `docs/PROGRESS.md`, `docs/UI_DESIGN_SYSTEM.md`.
 
-## Git Restrictions
+## Hard rules
+1. Implement ONLY the phase described in the prompt. No extra features, no refactors outside scope.
+2. NEVER run `git commit`, `git push`, `git reset`, `git rebase`, `git stash`, `git checkout`/`git switch`. Read-only git (`status`, `diff`, `log`) is fine. The human reviews and commits.
+3. No new dependencies unless the prompt lists them. If you believe one is needed, STOP, do not install it, and explain in your report. Pin exact versions.
+4. Do not change architecture. If something in the docs looks wrong or impossible, stop and report it.
+5. Never write secrets into tracked files. `.env` is git-ignored; keep `.env.example` current.
+6. Never claim tests pass unless you ran them and saw them pass. Paste real output in the report. Report failures honestly.
+7. If blocked or unsure, stop and ask rather than guess.
 
-- NEVER run git commit.
-- NEVER run git push.
-- NEVER run git reset.
-- NEVER run git rebase.
-- NEVER run git merge.
-- NEVER modify Git history.
-- NEVER switch branches.
-- NEVER delete branches.
-- NEVER use destructive Git commands.
+## Environment
+- Windows, PowerShell, repo at `F:\Projects\ohh`. Python 3.13, Node 22, Docker Desktop (no WSL assumed).
+- No bash-only commands, no Makefile. Use PowerShell-compatible commands only.
+- Python venv: `backend\.venv`. Run Python as `backend\.venv\Scripts\python.exe`.
 
-## Development Rules
+## Code style
+- Readable over clever. Comments explain WHY, not WHAT. Small functions.
+- Python: type hints on public functions, Django conventions, validate on the backend.
+- TypeScript: `strict`, no `any`, no unused exports.
+- Never trust the frontend for permissions or validation.
 
-- Inspect the repository before making changes.
-- Follow existing architecture and conventions.
-- Only implement the requested task.
-- Do not modify unrelated files.
-- Do not overwrite existing user work.
-- Report all modified and created files.
-- Run relevant tests.
-- Never claim tests passed without executing them.
-
-The human developer is responsible for all Git operations.
+## Final report (always)
+Implementation summary; files created; files modified; dependencies added (with versions); important decisions; commands run; tests run with real output; known issues; remaining TODOs; manual testing steps.
