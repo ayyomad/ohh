@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Read-only: CI has no need to write back to the repo (no releases yet).
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Django tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: ohh
+          POSTGRES_USER: ohh
+          POSTGRES_PASSWORD: ci-postgres-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ohh -d ohh"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DJANGO_SECRET_KEY: ci-only-not-a-real-secret
+      POSTGRES_DB: ohh
+      POSTGRES_USER: ohh
+      POSTGRES_PASSWORD: ci-postgres-password
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+      - name: Run tests
+        run: python manage.py test
+        working-directory: backend
+      - name: Check migrations are up to date
+        run: python manage.py makemigrations --check --dry-run
+        working-directory: backend
+
+  frontend:
+    name: Frontend lint, typecheck, tests, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+      - name: Lint
+        run: npm run lint
+        working-directory: frontend
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: frontend
+      - name: Test
+        run: npm run test
+        working-directory: frontend
+      - name: Build
+        run: npm run build
+        working-directory: frontend
