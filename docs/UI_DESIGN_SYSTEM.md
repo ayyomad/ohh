@@ -8,6 +8,7 @@ Direction: minimalist editorial + contemporary brutalist + technical instrument.
 - Mono caps for metadata/labels. Large numerals/type as visual anchors.
 - Hatching and thin line-drawn instrument glyphs for empty/loading/placeholder states.
 - Dashboard (editorial, bento grid) and canvas (quiet, content dominates) are different environments.
+add “Tailwind utilities: bg-ground (dashboard), bg-ground-canvas (canvas)”.
 
 ## Tokens
 | Token | Light | Dark |
@@ -33,3 +34,4 @@ Radius: 4px inputs/chips, 12px cards, full for pills/toolbar, 2–4px for canvas
 
 ## Other
 Icons: Lucide, 1.5px stroke, shortcut hints in mono. Per-board accent: curated ~8 swatches, affects canvas content/selection only; app chrome stays orange. Board light/dark is independent of app theme.
+
