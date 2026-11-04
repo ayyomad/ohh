@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "apps.accounts",
     "apps.core",
+    "apps.boards",
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,10 @@ DATABASES = {
         "NAME": env("POSTGRES_DB", default="ohh"),
         "USER": env("POSTGRES_USER", default="ohh"),
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
-        "HOST": env("POSTGRES_HOST", default="localhost"),
+        # WHY 127.0.0.1, not localhost (D-024): on Windows, localhost may
+        # resolve to IPv6 ::1 first while Postgres here listens on IPv4 only,
+        # adding multi-second connection delays.
+        "HOST": env("POSTGRES_HOST", default="127.0.0.1"),
         "PORT": env.int("POSTGRES_PORT", default=5433),
         # WHY: on Windows, libpq's non-blocking connect treats ECONNREFUSED as
         # "still connecting" and psycopg waits indefinitely (observed with
