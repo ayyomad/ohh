@@ -1,4 +1,4 @@
-"""Tests for the custom user model and the initial migration."""
+"""Tests for the custom user model, the initial migration and the seam."""
 
 from io import StringIO
 
@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.db.migrations.loader import MigrationLoader
 from django.test import TestCase
+
+from apps.accounts.current_user import get_current_user
 
 
 class TestAuthUserModel(TestCase):
@@ -49,3 +51,20 @@ class TestInitialAccountsMigration(TestCase):
         out = StringIO()
         call_command("makemigrations", "--check", "--dry-run", stdout=out)
         self.assertIn("No changes detected", out.getvalue())
+
+
+class TestCurrentUserSeam(TestCase):
+    def test_repeated_calls_return_the_same_user_ever(self) -> None:
+        first = get_current_user(None)
+        second = get_current_user(None)
+        self.assertEqual(first.pk, second.pk)
+        user_model = get_user_model()
+        self.assertEqual(
+            user_model.objects.filter(username=first.username).count(), 1
+        )
+
+    def test_seam_user_has_no_usable_password_and_no_privileges(self) -> None:
+        user = get_current_user(None)
+        self.assertFalse(user.has_usable_password())
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)

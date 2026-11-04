@@ -42,13 +42,13 @@ py -3.13 -m venv backend\.venv
 backend\.venv\Scripts\pip.exe install -r backend\requirements.txt
 backend\.venv\Scripts\python.exe backend\manage.py migrate
 backend\.venv\Scripts\python.exe backend\manage.py runserver
-# -> http://localhost:8000 (admin at /admin/, health at /api/v1/health/)
+# -> http://127.0.0.1:8000 (admin at /admin/, health at /api/v1/health/)
 
 # 4. Frontend (separate terminal): install and run.
 cd frontend
 npm install
 npm run dev
-# -> http://localhost:5173 (proxies /api to localhost:8000)
+# -> http://127.0.0.1:5173 (proxies /api to 127.0.0.1:8000)
 ```
 
 ## Tests
@@ -69,8 +69,8 @@ npm run build
 ## The `full` profile (everything in Docker)
 
 `docker compose --profile full up --build` builds and starts all three
-services: `db` (Postgres, port 5433), `backend` (http://localhost:8000) and
-`frontend` (http://localhost:5173). Values come from the repo-root `.env`.
+services: `db` (Postgres, port 5433), `backend` (http://127.0.0.1:8000) and
+`frontend` (http://127.0.0.1:5173). Values come from the repo-root `.env`.
 The default `docker compose up -d db` starts ONLY the database; day-to-day
 development runs the two apps natively (see `docs/DECISIONS.md`, D-008).
 
@@ -84,6 +84,8 @@ development runs the two apps natively (see `docs/DECISIONS.md`, D-008).
   has no default on purpose. Create `.env` from `.env.example` first.
 - **`makemigrations`/`test` hang or warn about the database**: the Postgres
   container from step 2 must be up first (`docker compose up -d db`).
+- On Windows prefer `127.0.0.1` over `localhost` for local services
+  (IPv6 fallback can add multi-second delays).
 
 ## License
 

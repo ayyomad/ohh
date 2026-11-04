@@ -8,7 +8,7 @@
 | Phase | Endpoint |
 |---|---|
 | 1 | `GET /api/v1/health/` |
-| 2 | `/api/v1/boards/` CRUD; `POST /api/v1/boards/{id}/duplicate/` |
+| 2 | `/api/v1/boards/` CRUD; `POST /api/v1/boards/{id}/duplicate/,  boards: list, create, retrieve, PATCH, DELETE (soft delete); ?search=; page-number pagination”. Duplicate is moved to Phase 6. The error convention is “DRF default format for now` |
 | 6 | board document load/save, snapshots |
 | 7 | asset presign + confirm; `POST /api/v1/link-preview/` |
 | 8 | auth: register, login, refresh, logout, me |

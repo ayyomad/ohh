@@ -11,9 +11,30 @@ import "@fontsource/instrument-serif/400-italic.css";
 import "./styles/tokens.css";
 import { applyInitialTheme } from "./theme";
 import { App } from "./App";
+import { ApiError } from "./api/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Before React renders, so the first frame already matches the stored theme.
 applyInitialTheme();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // 4xx are answers, not accidents: retrying them only repeats a 400.
+      // Other failures (network, 5xx) retry at most ONCE so the error state
+      // appears quickly when the backend is down.
+      retry: (failureCount, error) => {
+        if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+          return false;
+        }
+        return failureCount < 1;
+      },
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
 
 const container = document.getElementById("root");
 if (!container) {
@@ -22,6 +43,8 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </StrictMode>
 );
